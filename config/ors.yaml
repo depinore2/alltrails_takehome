@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ors-deployment
+  labels:
+    app: ors
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ors
+  template:
+    metadata:
+      labels:
+        app: ors
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: ors
+        image: openrouteservice/openrouteservice:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: graphs
+          mountPath: /ors-core/data/graphs
+        - name: elevation-cache
+          mountPath: /ors-core/data/elevation_cache
+        - name: conf
+          mountPath: /ors-conf
+        env:
+        - name: JAVA_OPTS
+          value: "-Djava.awt.headless=true -server -XX:TargetSurvivorRatio=75 -XX:SurvivorRatio=64 -XX:MaxTenuringThreshold=3 -XX:+UseG1GC -XX:+ScavengeBeforeFullGC -XX:ParallelGCThreads=4 -Xms1g -Xmx2g"
+        - name: CATALINA_OPTS
+          value: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
+      volumes:
+      - name: graphs
+        emptyDir: {}
+      - name: conf
+        emptyDir: {}
+      - name: elevation-cache
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ors-service
+spec:
+  selector:
+    app: ors
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ors-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /ors/$1
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /ors/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: ors-service
+            port:
+              number: 80
