@@ -21,13 +21,28 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+
+      # this initContainer will fetch the custom data that we want to populate this instance with, and place it in a volumeMount which we will share with the ORS container.
+      # If you want to populate it with different data, modfiy this initContainer.
+      # The script reads the desired path for the custom path from the ors-config.json file, and then makes sure to download it and place it there.
+      initContainers:
+      - name: fetch-data
+        image: mcr.microsoft.com/powershell:lts-ubuntu-18.04
+        command: ["pwsh", "-c", "$customFilePath = (gc /ors-config/ors-config.json | convertfrom-json).ors.services.routing.sources[0]; invoke-webrequest https://github.com/GIScience/openrouteservice/raw/master/openrouteservice/src/main/files/heidelberg.osm.gz -outfile $customFilePath"]
+        #command: ['pwsh', '-c', "'while($true) { start-sleep -seconds 100 }'"]
+        volumeMounts:
+        - name: custom-data
+          mountPath: /custom-data
+        - name: ors-config
+          mountPath: /ors-config
+
       containers:
       - name: ors
         image: openrouteservice/openrouteservice:latest
         ports:
         - containerPort: 8080
 
-        # openrouteservice seems to take a while to start up, due to building up its graphs
+        # openrouteservice seems to take a while to start up, due to the fact it needs to build up its graph on first-start.
         # we will use this readiness probe to ensure it doesnt field requests until it's ready.
         # more info: https://giscience.github.io/openrouteservice/installation/Running-with-Docker#checking
         readinessProbe:
@@ -41,8 +56,10 @@ spec:
           mountPath: /ors-core/data/graphs
         - name: elevation-cache
           mountPath: /ors-core/data/elevation_cache
-        - name: conf
+        - name: ors-config
           mountPath: /ors-conf
+        - name: custom-data
+          mountPath: /custom-data # If you refere to the ors/ors-config.json's ors.services.routing.sources property, you'll see it's configuring ORS to look to this path for our data.
         env:
         - name: JAVA_OPTS
           value: "-Djava.awt.headless=true -server -XX:TargetSurvivorRatio=75 -XX:SurvivorRatio=64 -XX:MaxTenuringThreshold=3 -XX:+UseG1GC -XX:+ScavengeBeforeFullGC -XX:ParallelGCThreads=4 -Xms1g -Xmx2g"
@@ -53,12 +70,18 @@ spec:
       volumes:
       - name: graphs
         emptyDir: {}
-      - name: conf
-        emptyDir: {}
       - name: elevation-cache
         emptyDir: {}
       - name: logs
         emptyDir: {}
+      - name: custom-data
+        emptyDir: {}
+      - name: ors-config
+        configMap:
+          name: ors-config
+          items:
+          - key: ors-config.json
+            path: ors-config.json
 ---
 apiVersion: v1
 kind: Service
