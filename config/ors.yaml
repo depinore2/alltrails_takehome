@@ -14,6 +14,7 @@ spec:
       labels:
         app: ors
     spec:
+
       # this container image is expecting a specific folder structure with user 1000 and group 1000
       # will fail to initialize if it doesn't have write privileges to the volumeMounts.
       securityContext:
@@ -25,8 +26,10 @@ spec:
         image: openrouteservice/openrouteservice:latest
         ports:
         - containerPort: 8080
+
         # openrouteservice seems to take a while to start up, due to building up its graphs
         # we will use this readiness probe to ensure it doesnt field requests until it's ready.
+        # more info: https://giscience.github.io/openrouteservice/installation/Running-with-Docker#checking
         readinessProbe:
           exec:
             command:
@@ -67,21 +70,23 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ors-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /ors/$1
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /ors/?(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: ors-service
-            port:
-              number: 80
+
+# ==== Uncomment the following Ingress definition if you want to hit ORS directly from your computer at http://localhost/ors/ ====
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: ors-ingress
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /ors/$1 # ors assumes that all requests are prefixed with "/ors", so we are prepending it here.
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - path: /ors/?(.*)
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: ors-service
+#             port:
+#               number: 80
