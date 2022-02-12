@@ -3,3 +3,4 @@ elevation_cache
 graphs
 logs
 *osm*
+kubeconfig
