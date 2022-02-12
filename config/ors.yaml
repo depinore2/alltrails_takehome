@@ -14,6 +14,8 @@ spec:
       labels:
         app: ors
     spec:
+      # this container image is expecting a specific folder structure with user 1000 and group 1000
+      # will fail to initialize if it doesn't have write privileges to the volumeMounts.
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
@@ -23,6 +25,14 @@ spec:
         image: openrouteservice/openrouteservice:latest
         ports:
         - containerPort: 8080
+        # openrouteservice seems to take a while to start up, due to building up its graphs
+        # we will use this readiness probe to ensure it doesnt field requests until it's ready.
+        readinessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - curl http:///localhost:8080/ors/v2/health -s | grep '"ready"'
         volumeMounts:
         - name: graphs
           mountPath: /ors-core/data/graphs
@@ -35,6 +45,8 @@ spec:
           value: "-Djava.awt.headless=true -server -XX:TargetSurvivorRatio=75 -XX:SurvivorRatio=64 -XX:MaxTenuringThreshold=3 -XX:+UseG1GC -XX:+ScavengeBeforeFullGC -XX:ParallelGCThreads=4 -Xms1g -Xmx2g"
         - name: CATALINA_OPTS
           value: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
+
+      # these volumeMounts are required in order to provide ORS a folder structure it can write graphs and cache items to.
       volumes:
       - name: graphs
         emptyDir: {}
