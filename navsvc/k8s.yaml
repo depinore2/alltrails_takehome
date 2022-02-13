@@ -20,6 +20,14 @@ spec:
         imagePullPolicy: Never # Should never pull, because it's going to rely on it being loaded in by `kind load docker-image`.
         ports:
         - containerPort: 80
+
+        # it's going to wait for the ors-service to be available before becoming available.
+        readinessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - curl http://ors-service/ors/v2/health -s | grep '"ready"'
 ---
 apiVersion: v1
 kind: Service

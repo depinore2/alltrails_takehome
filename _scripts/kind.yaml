@@ -1,6 +1,7 @@
 kind: Cluster
 networking:
-  apiServerAddress: 0.0.0.0
+  apiServerAddress: 0.0.0.0 # By default, kind will only respond to requests from "localhost", but we will be making kubectl requests from within our dev container, which looks like a "remote" request from the perspective of the container.
+                            # Make sure your computer has a firewall installed that prevents -real- external requests from hitting your kind control plane endpoint.
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - extraPortMappings:

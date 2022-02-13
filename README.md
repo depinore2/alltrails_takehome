@@ -1,8 +1,8 @@
 ## Starting the Demo ##
 - Open this solution in VS Code
 - Assuming you have the Remote Development extension installed, Command Palette --> Reopen and Rebuild in Container.
-- Now that you're in the dev container, start a `pwsh` terminal.
-- Execute the following command: `./run.ps1`.
+- Now that you're in the dev container, start a `pwsh` session.
+- Execute the following command: `./start.ps1`.
 ## Interacting with the Demo ##
 - You can interact with the 'rails' app at http://localhost/
 - You can interact with the navigation service at http://localhost/nav/{lat1}/{lon1}/{lat2}/{lon2}
