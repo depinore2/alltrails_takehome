@@ -15,3 +15,8 @@ curl 'http://localhost:8080/ors/v2/directions/driving-car?start=8.676581,49.4182
 
 Additional information about ORS:
 - The configmap is located in /ors-conf/ors-config.json.  We can load our custom config file as a ConfigMap and then pass it down into /ors-conf/ors-config.json in order to customize the behavior of the ORS instance.  In our case, we plan to provide a customized ors.services.routing.sources property to our volumeMount which contains our custom-downloaded heidelberg file.
+
+## Interacting with the Demo ##
+- You can interact with the 'rails' app at http://localhost/
+- You can interact with the navigation service at http://localhost/nav/{lat1}/{lon1}/{lat2}/{lon2}
+- An example GET request for the nav service is http://localhost/nav/8.676581/49.418204/8.692803/49.409465

@@ -23,3 +23,8 @@ RUN mv ./kind /usr/local/bin/kind
 
 # install powershell modules as necessary
 RUN pwsh -c 'install-module powershell-yaml -force'
+
+# install NPM
+RUN curl -sL https://deb.nodesource.com/setup_17.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt install nodejs -y
