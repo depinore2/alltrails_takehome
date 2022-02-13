@@ -1,3 +1,7 @@
+<#
+  This script is really just here so that I could spin up an ORS container without the complexity of k8s.
+  I used this as the first step to understanding how ORS worked in isolation.
+#>
 $dirs = @('conf','elevation_cache','graphs','logs/ors','logs/tomcat');
 
 # first, make the directories that will store the various config and cache files.

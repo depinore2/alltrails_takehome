@@ -1,3 +1,18 @@
+## Starting the Demo ##
+- Open this solution in VS Code
+- Assuming you have the Remote Development extension installed, Command Palette --> Reopen and Rebuild in Container.
+- Now that you're in the dev container, start a `pwsh` terminal.
+- Execute the following command: `./run.ps1`.
+## Interacting with the Demo ##
+- You can interact with the 'rails' app at http://localhost/
+- You can interact with the navigation service at http://localhost/nav/{lat1}/{lon1}/{lat2}/{lon2}
+- An example GET request for the nav service is http://localhost/nav/8.676581/49.418204/8.692803/49.409465
+## Design Considerations ##
+For detailed information regarding the design of the application, and answers to questions specifically asked in the exercise, please refer to the repo wiki.
+
+## Notes to Self ##
+The following are notes I jotted down as I worked my way through the exercise.  I'm sharing them to give a sense for how my thought process went.
+
 How to run with just docker:
 - https://giscience.github.io/openrouteservice/installation/Running-with-Docker#install-and-run-openrouteservice-with-docker
 
@@ -15,8 +30,3 @@ curl 'http://localhost:8080/ors/v2/directions/driving-car?start=8.676581,49.4182
 
 Additional information about ORS:
 - The configmap is located in /ors-conf/ors-config.json.  We can load our custom config file as a ConfigMap and then pass it down into /ors-conf/ors-config.json in order to customize the behavior of the ORS instance.  In our case, we plan to provide a customized ors.services.routing.sources property to our volumeMount which contains our custom-downloaded heidelberg file.
-
-## Interacting with the Demo ##
-- You can interact with the 'rails' app at http://localhost/
-- You can interact with the navigation service at http://localhost/nav/{lat1}/{lon1}/{lat2}/{lon2}
-- An example GET request for the nav service is http://localhost/nav/8.676581/49.418204/8.692803/49.409465
