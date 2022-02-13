@@ -138,6 +138,8 @@ Another stumbling block I ran into was the fact that ORS expects a certain folde
 # Closing Thoughts #
 I didn't expect to have as much fun as I did with this little exercise. I might've gone a little overboard with this, but honestly it was entertaining. I can now say that I know a little bit about OpenRouteService, and how it relates to OpenStreetMap. 
 
+The source file for the various diagrams are located in /docs, and can be opened using https://app.diagrams.net.
+
 I appreciate your time, and hope you enjoyed reading through my work.
 
 # Notes to Self #
