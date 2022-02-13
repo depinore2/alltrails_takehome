@@ -16,7 +16,7 @@ spec:
     spec:
 
       # this container image is expecting a specific folder structure with user 1000 and group 1000
-      # will fail to initialize if it doesn't have write privileges to the volumeMounts.
+      # will fail to initialize if it doesn't have write privileges to the folders provided by the volumeMounts.
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
