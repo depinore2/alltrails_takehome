@@ -7,8 +7,19 @@
 - You can interact with the 'rails' app at http://localhost/
 - You can interact with the navigation service at http://localhost/nav/{lat1}/{lon1}/{lat2}/{lon2}
 - An example GET request for the nav service is http://localhost/nav/8.676581/49.418204/8.692803/49.409465
-## Design Considerations ##
-For detailed information regarding the design of the application, and answers to questions specifically asked in the exercise, please refer to the repo wiki.
+## Architecture ##
+The demo consists of three major subsystems:
+* ORS Service (ors)
+* App Web Application (app)
+* Navigation Service (navsvc)
+
+It runs in KinD when running it on your local machine.
+
+![Demo Arch on KinD](https://github.com/depinore2/alltrails_takehome/raw/master/docs/alltrails-Demo%20Architecture.png)
+
+The "app" is really just a static HTML page hosted in an nginx container.  The assignment specification mentioned that the imaginary rails app was hosted on port 3000, so I configured the nginx container to listen to port 3000 to accomodate this detail.
+
+
 
 ## Notes to Self ##
 The following are notes I jotted down as I worked my way through the exercise.  I'm sharing them to give a sense for how my thought process went.
