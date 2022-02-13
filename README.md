@@ -131,7 +131,7 @@ I've never worked with OpenRouteService before, so it required a fair amount of 
 
 Once I wrapped my head around the relationship between the various configuration files and server switches, I ran into issues related to the slow startup time of the server itself. For example, if I started up all of the pods at once, the navservice would crash due to the fact that the ORS endpoint wasn't done building its graph.
 
-I ended up writing a few kubernetes probes that polled the `/ors/v2/health` endpoint, and that ensured that both the navservice and ORS service were given the appropriate time to start up.
+I ended up writing a few kubernetes probes that polled the `/ors/v2/health` endpoint, and that ensured that both the navservice and ORS service were given the appropriate time to start up.  To see an example of this, refer to /ors/k8s.yaml.
 
 Another stumbling block I ran into was the fact that ORS expects a certain folder structure to exist before starting up.  I was able to resolve this by creating various volumeMounts.
 
