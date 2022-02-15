@@ -77,7 +77,8 @@ http {
         # listen 443 ssl;
         # ssl_certificate cert-public-key-goes-here
         # ssl_certificate_key cert-private-key-goes-here
-        # server_name  localhost;
+        
+        server_name  localhost;
 
         location ~* ^/(.*) {
             proxy_pass http://rails_group/$1$is_args$args;
