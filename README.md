@@ -105,7 +105,7 @@ Communication within the cluster would leverage Istio (and implicitly Envoy).  I
 
 If we applied the aforementioned changes to the demo architecture, it would look like this:
 
-![Demo Arch With Network Security](https://github.com/depinore2/alltrails_takehome/raw/master/docs/alltrails-Arch%20w_Network%20Security.png)
+![Demo Arch With Network Security](https://github.com/depinore2/alltrails_takehome/raw/master/docs/alltrails-Arch%20w_Network%20Security%202.png)
 
 Note: some details from the previous diagram were omitted for clarity.
 
@@ -128,7 +128,7 @@ The pattern tends to look like this, assuming a Single-Page javascript applicati
 ## Security in the Context of Cloud Infrastructure ##
 Eventually, our system needs to actually run in production infrastructure.  Assuming our infrastructure provider is Amazon Web Services, we would combine all of the above considerations and add AWS IAM, Certificate Manager, and even lock down our S3 buckets like this:
 
-![Prod Arch with Infrastructure Security](https://github.com/depinore2/alltrails_takehome/raw/master/docs/alltrails-Full%20Prod%20Arch%20(AWS).png)
+![Prod Arch with Infrastructure Security](https://github.com/depinore2/alltrails_takehome/raw/master/docs/alltrails-Full%20Prod%20Arch%20(AWS)%202.png)
 
 The Certificate Manager would offer us a place to store our SSL certificates for use in both the Istio control plane and in the AWS Application Load Balancer handling ingress requests.
 
