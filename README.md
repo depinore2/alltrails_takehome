@@ -20,6 +20,76 @@ It runs in KinD when running it on your local machine, and looks like this:
 
 The "app" is really just a static HTML page hosted in an nginx container.  The assignment specification mentioned that the imaginary rails app was hosted on port 3000, so I configured the nginx container to listen to port 3000 to accomodate this detail.
 
+# NGINX #
+The exercise mentions use of nginx as a reverse proxy for ingress traffic.  This is such a common pattern that the good folks at the kubernetes team created a dedicated ingress-nginx Ingress Controller in order to embed nginx into the ingress functionality of a kubernetes cluster.
+
+This averts the need to deploy and manually configure your own nginx server, and instead allows a kubernetes administrator to simply define Ingress definitions in their YAML files. Due to the fact that the ingress-nginx controller is closer to how I would "really" implement this system, I opted for that approach rather than provisioning an actual nginx server as described in the exercise scenario.
+
+For the sake of completeness, however, I would like to share what an nginx configuration file would look like had I provisioned it myself, based on the specs in the assignment:
+
+```
+user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    # this assumes we created multiple rails application endpoints
+    upstream rails_group   {
+        server my.rails1.app;
+        server my.rails2.app;
+        # etc
+    }
+
+    # this assumes we created multiple navservice application endpoints.
+    upstream navservice_group {
+        server my.nav1.api;
+        server my.nav2.api;
+        # etc
+    }
+
+# we didn't make an entry for the ORS service, because we don't want end-users to be able to hit ORS directly.
+
+    server {
+        listen       80;
+
+        # === the following would be uncommented when using SSL ===
+        # listen 443 ssl;
+        # ssl_certificate cert-public-key-goes-here
+        # ssl_certificate_key cert-private-key-goes-here
+        # server_name  localhost;
+
+        location ~* ^/(.*) {
+            proxy_pass http://rails_group/$1$is_args$args;
+        }
+        location ~* ^/navservice/(.*) {
+            proxy_pass http://navservice_group/$1$is_args$args;
+        }
+    }
+}
+```
+
+The above configuration doesn't take advantage of anything like kubernetes Services, and was done for illustrative purposes.
 
 # Security #
 This demo was not built with any security in mind.  All communication is unencrypted using HTTP, and both the app and the navsvc indiscriminately respond to requests.  If this were a real production application, it would be reinforced in three major ways:
